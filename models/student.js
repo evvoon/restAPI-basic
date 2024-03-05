@@ -1,7 +1,3 @@
-// this gives the model for the application
-// model helps you interact with database in easy way
-// so it gives you name, age, wtv attribute u wanna add for student
-
 const mongoose = require("mongoose");
 
 const studentSchema = new mongoose.Schema({

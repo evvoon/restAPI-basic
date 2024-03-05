@@ -3,8 +3,6 @@ const express = require("express");
 const router = express.Router();
 const Student = require("../models/student");
 
-// need routes for getting all , updating , del , creating one
-
 // getting all
 router.get("/", async (req, res) => {
   try {
@@ -58,13 +56,30 @@ router.post("/", async (req, res) => {
 });
 
 // updating one
-// patch is used instead of put cuz maybe u wanna only update one field not all
-router.patch("/:id", getStudent, (req, res) => {});
+router.patch("/:id", getStudent, async (req, res) => {
+  console.log(req.body);
+  const updateFields = { ...req.body };
+
+  try {
+    // Update the existing student with the new fields
+    Object.assign(res.student, updateFields);
+
+    // Save the updated student
+    const updatedStudent = await res.student.save();
+
+    res.json(updatedStudent);
+  } catch (error) {
+    res.status(500).json({ message: "Error while updating: " + error.message });
+  }
+});
 
 // deleting one
-router.delete("/:id", getStudent, async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
-    await res.student.remove();
+    const result = await Student.findByIdAndDelete(req.params.id);
+    if (!result) {
+      return res.status(404).json({ message: "cannot find student" });
+    }
     res.json({ message: "deleted student" });
   } catch (err) {
     res.status(500).json({ message: err.message });
